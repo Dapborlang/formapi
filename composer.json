@@ -1,0 +1,25 @@
+{
+    "name": "rdmarwein/form-api",
+    "description": "Generate Form from Api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dapbor",
+            "email": "dapbor88@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rdmarwein\\FormApi\\FormApiServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Rdmarwein\\FormApi\\": "src/"
+        }
+    }
+}
