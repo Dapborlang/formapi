@@ -12,9 +12,11 @@ use Rdmarwein\FormApi\Models\FormValidation;
 
 class FormBuilderAPIController extends Controller
 {
-    public function __construct()
+    public function __construct(Request $request)
     {
+        $role=FormMaster::findOrFail($request->id);
         $this->middleware('auth');
+        $this->middleware('credential:'.$role->role);
     }
     
     public function index($id)
