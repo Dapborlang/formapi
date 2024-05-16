@@ -72,6 +72,7 @@ export default {
       formData: {},
       error: {},
       selectedOption: {},
+      redirect: null
     };
   },
   mounted() {
@@ -88,6 +89,7 @@ export default {
           this.selectOption = response.data.select;
           this.dependant = response.data.dependant;
           this.inputType = response.data.inputType;
+          this.redirect = response.data.redirect;
         })
         .catch((error) => {
           console.error("Error fetching columns:", error);
