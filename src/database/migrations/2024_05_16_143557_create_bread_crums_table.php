@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('bread_crums', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('form_master_id');
+            $table->string('breadcrumb_item')->unique();
             $table->foreign('form_master_id')->references('id')->on('form_masters')->onDelete('cascade');
             $table->timestamps();
         });

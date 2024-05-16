@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('bread_crum_id');
             $table->unsignedBigInteger('form_master_id');
             $table->string('on_column_name');
-            $table->string('breadcrumb-item');
+            $table->string('breadcrumb_item');
             $table->foreign('bread_crum_id')->references('id')->on('bread_crums')->onDelete('cascade');
             $table->foreign('form_master_id')->references('id')->on('form_masters')->onDelete('cascade');
             $table->timestamps();

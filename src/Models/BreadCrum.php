@@ -14,4 +14,9 @@ class BreadCrum extends Model
     {
        return $this->hasMany(BreadCrumDetail::class);
     }
+
+    public function FormMaster()
+    {
+        return $this->belongsTo(FormMaster::class);
+    }
 }
