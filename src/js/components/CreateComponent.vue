@@ -1,5 +1,18 @@
 <template>
   <div>
+    <template v-if="Object.keys(breadcrumbs).length">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li v-for="(breadcrumb, key) in breadcrumbs"
+        :key="key"
+        :class="['breadcrumb-item', { 'active': breadcrumb === activeBreadcrumb }]">
+        <a v-if="breadcrumb !== activeBreadcrumb" href="#">{{ breadcrumb }}</a>
+        <span v-else>{{ breadcrumb }}</span>
+      </li>
+    </ol>
+  </nav>
+</template>
+    
     <div class="card shadow">
       <div class="card-header bg-primary text-white">{{ header }}</div>
       <div class="card-body">
@@ -72,16 +85,17 @@ export default {
       formData: {},
       error: {},
       selectedOption: {},
-      redirect: null
+      breadcrumbs: {1: "Data", 2: "Testing", 3: "Hello"},
+      activeBreadcrumb: "Testing"
     };
   },
   mounted() {
-    this.fetchColumns();
+    this.fetchColumns(`/form-api/create/${this.formid}`);
   },
   methods: {
-    fetchColumns() {
+    fetchColumns(url) {
       axios
-        .get(`/form-api/create/${this.formid}`)
+        .get(url)
         .then((response) => {
           this.header = response.data.header;
           this.columns = response.data.columns;
