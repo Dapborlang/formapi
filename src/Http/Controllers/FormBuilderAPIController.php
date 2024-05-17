@@ -81,7 +81,7 @@ class FormBuilderAPIController extends Controller
         $selectOption=[];
         $inputType=[];
         $dependant=[];
-        $breadcrump=[];
+        $breadcrumb=[];
 
         $formMaster=FormMaster::findOrFail($id);
         $formInputType=FormInputType::where('form_master_id',$id)
@@ -124,7 +124,7 @@ class FormBuilderAPIController extends Controller
         
         if(isset($formMaster->breadCrump->BreadCrumbDetail))
         {
-            $breadcrump=$formMaster->breadCrump->BreadCrumbDetail->pluck('breadcrumb_item')->toArray();
+            $breadcrumb=$formMaster->breadCrump->BreadCrumbDetail->pluck('breadcrumb_item')->toArray();
         }
         
         $columns = array_diff(DB::getSchemaBuilder()->getColumnListing($formMaster->table_name), $excludedColumns);
@@ -134,7 +134,7 @@ class FormBuilderAPIController extends Controller
             "select"=>$selectOption,
             "inputType"=>$inputType,
             "dependant"=>$dependant,
-            "breadcrump"=>$breadcrump
+            "breadcrumb"=>$breadcrumb
         ];
     }
     
@@ -142,6 +142,7 @@ class FormBuilderAPIController extends Controller
     {
         $formValidations = FormValidation::where('form_master_id', $id)->get();
         $validationData = [];
+        $breadcrumb=[];
         foreach ($formValidations as $item) {
             if (!array_key_exists($item->column_name, $validationData)) {
                 $validationData[$item->column_name] = $item->validation;
@@ -154,7 +155,13 @@ class FormBuilderAPIController extends Controller
         $formMaster=FormMaster::findOrFail($id);
         $modelClass = $formMaster->model;
         $modelInstance = new $modelClass;
-        $modelInstance->create($request->all());
+        $form_data=$modelInstance->create($request->all());
+
+        if(isset($formMaster->breadCrump->BreadCrumbDetail) && $form_data)
+        {
+            $breadcrumb=$formMaster->breadCrump->BreadCrumbDetail->pluck('breadcrumb_item')->toArray();
+            return ["breadcrumb"=>$breadcrumb];
+        }
     }
 
     public function show(string $id)

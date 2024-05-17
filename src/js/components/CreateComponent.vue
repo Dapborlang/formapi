@@ -87,7 +87,7 @@ export default {
           this.selectOption = response.data.select;
           this.dependant = response.data.dependant;
           this.inputType = response.data.inputType;
-          this.breadcrumbs = response.data.breadcrump;
+          this.breadcrumbs = response.data.breadcrumb;
         })
         .catch((error) => {
           console.error("Error fetching columns:", error);
@@ -99,8 +99,13 @@ export default {
         .then((response) => {
           console.log("Form submitted successfully:", response.data);
           this.formData = {};
+          if(response.data.breadcrumb)
+          {
+            this.fetchColumns(`/form-api/create/5`);
+          }
         })
         .catch((error) => {
+          console.log(error);
           this.error = error.response.data.errors;
         });
     },
