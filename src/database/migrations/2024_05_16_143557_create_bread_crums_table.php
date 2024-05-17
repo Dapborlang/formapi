@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bread_crums', function (Blueprint $table) {
+        Schema::create('bread_crumbs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('form_master_id');
             $table->string('breadcrumb_item')->unique();
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bread_crums');
+        Schema::dropIfExists('bread_crumbs');
     }
 };

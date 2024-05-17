@@ -75,6 +75,18 @@ return new class extends Migration
                 'table_name' => 'form_validations',
                 'model' => 'Rdmarwein\FormApi\Models\FormValidation',
                 'role' => 'ADM'                    
+            ],
+            [
+                'header' => 'Breadcrumb',
+                'table_name' => 'bread_crumbs',
+                'model' => 'Rdmarwein\FormApi\Models\BreadCrumb',
+                'role' => 'ADM'                    
+            ],
+            [
+                'header' => 'Breadcrumb Detail',
+                'table_name' => 'bread_crumb_details',
+                'model' => 'Rdmarwein\FormApi\Models\BreadCrumbDetail',
+                'role' => 'ADM'                    
             ]
             )
         );

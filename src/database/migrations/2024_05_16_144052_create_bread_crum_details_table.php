@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bread_crum_details', function (Blueprint $table) {
+        Schema::create('bread_crumb_details', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('bread_crum_id');
+            $table->unsignedBigInteger('bread_crumb_id');
             $table->unsignedBigInteger('form_master_id');
             $table->string('on_column_name');
             $table->string('breadcrumb_item');
-            $table->foreign('bread_crum_id')->references('id')->on('bread_crums')->onDelete('cascade');
+            $table->foreign('bread_crumb_id')->references('id')->on('bread_crumbs')->onDelete('cascade');
             $table->foreign('form_master_id')->references('id')->on('form_masters')->onDelete('cascade');
             $table->timestamps();
         });
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bread_crum_details');
+        Schema::dropIfExists('bread_crumb_details');
     }
 };
