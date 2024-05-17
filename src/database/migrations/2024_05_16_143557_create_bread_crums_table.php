@@ -18,6 +18,14 @@ return new class extends Migration
             $table->foreign('form_master_id')->references('id')->on('form_masters')->onDelete('cascade');
             $table->timestamps();
         });
+
+        DB::table('bread_crumbs')->insert(
+            array(
+            [
+                'form_master_id' => 3,
+                'breadcrumb_item' => 'Form Master'
+            ]
+            ));
     }
 
     /**

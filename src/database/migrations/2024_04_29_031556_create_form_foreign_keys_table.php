@@ -94,6 +94,27 @@ return new class extends Migration
                 'foreign_key' => 'form_master_id',
                 'master_id' => 'id',
                 'master_detail'=>'header'
+            ],
+            [
+                'form_master_id' => 10,
+                'master_model' => 'Rdmarwein\FormApi\Models\FormMaster',
+                'foreign_key' => 'form_master_id',
+                'master_id' => 'id',
+                'master_detail'=>'header'
+            ],
+            [
+                'form_master_id' => 11,
+                'master_model' => 'Rdmarwein\FormApi\Models\FormMaster',
+                'foreign_key' => 'form_master_id',
+                'master_id' => 'id',
+                'master_detail'=>'header'
+            ],
+            [
+                'form_master_id' => 11,
+                'master_model' => 'Rdmarwein\FormApi\Models\BreadCrumb',
+                'foreign_key' => 'bread_crumb_id',
+                'master_id' => 'id',
+                'master_detail'=>'breadcrumb_item'
             ]
         ));
     }

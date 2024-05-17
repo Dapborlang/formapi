@@ -9,4 +9,14 @@ class BreadCrumbDetail extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+
+    public function BreadCrumb()
+    {
+        return $this->belongsTo(BreadCrumb::class);
+    }
+
+    public function FormMaster()
+    {
+        return $this->belongsTo(FormMaster::class);
+    }
 }
