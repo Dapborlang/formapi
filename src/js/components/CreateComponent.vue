@@ -1,57 +1,41 @@
 <template>
   <div>
     <template v-if="Object.keys(breadcrumbs).length">
-  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li v-for="(breadcrumb, key) in breadcrumbs"
-        :key="key"
-        :class="['breadcrumb-item', { 'active': breadcrumb === activeBreadcrumb }]">
-        <a v-if="breadcrumb !== activeBreadcrumb" href="#">{{ breadcrumb }}</a>
-        <span v-else>{{ breadcrumb }}</span>
-      </li>
-    </ol>
-  </nav>
-</template>
-    
+      <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="#">{{ header }}</a>
+          </li>
+          <li v-for="(breadcrumb, key) in breadcrumbs" :key="key"
+            :class="['breadcrumb-item', { 'active': breadcrumb === activeBreadcrumb }]">
+            <a v-if="breadcrumb !== activeBreadcrumb" href="#">{{ breadcrumb }}</a>
+            <span v-else>{{ breadcrumb }}</span>
+          </li>
+        </ol>
+      </nav>
+    </template>
+
     <div class="card shadow">
       <div class="card-header bg-primary text-white">{{ header }}</div>
       <div class="card-body">
         <form @submit.prevent="submitForm">
           <div class="row">
-            <div
-              v-for="(value, key) in columns"
-              :key="key"
-              class="mb-3 col-sm-4"
-            >
+            <div v-for="(value, key) in columns" :key="key" class="mb-3 col-sm-4">
               <label :for="value" class="form-label">{{
                 formatString(value)
               }}</label>
               <template v-if="select.includes(value)">
-                <multiselect
-                  v-model="selectedOption[value]"
-                  :options="selectOption[value]"
-                  :placeholder="'Select ' + formatString(value)"
-                  label="text"
-                  track-by="text"
-                  @select="handleSelect(value, $event)"
-                ></multiselect>
+                <multiselect v-model="selectedOption[value]" :options="selectOption[value]"
+                  :placeholder="'Select ' + formatString(value)" label="text" track-by="text"
+                  @select="handleSelect(value, $event)"></multiselect>
               </template>
               <template v-else>
                 <template v-if="inputType[value] == 'textarea'">
-                  <textarea
-                    :id="value"
-                    v-model="formData[value]"
-                    :type="inputType[value]"
-                    class="form-control"
-                  ></textarea>
+                  <textarea :id="value" v-model="formData[value]" :type="inputType[value]"
+                    class="form-control"></textarea>
                 </template>
                 <template v-else>
-                  <input
-                    :id="value"
-                    v-model="formData[value]"
-                    :type="inputType[value]"
-                    class="form-control"
-                  />
+                  <input :id="value" v-model="formData[value]" :type="inputType[value]" class="form-control" />
                   <span v-show="error && error[value]" class="text-danger">{{
                     error[value]
                   }}</span>
@@ -85,7 +69,7 @@ export default {
       formData: {},
       error: {},
       selectedOption: {},
-      breadcrumbs: {1: "Data", 2: "Testing", 3: "Hello"},
+      breadcrumbs: [],
       activeBreadcrumb: "Testing"
     };
   },
@@ -103,7 +87,7 @@ export default {
           this.selectOption = response.data.select;
           this.dependant = response.data.dependant;
           this.inputType = response.data.inputType;
-          this.redirect = response.data.redirect;
+          this.breadcrumbs = response.data.breadcrump;
         })
         .catch((error) => {
           console.error("Error fetching columns:", error);
@@ -144,7 +128,7 @@ export default {
             this.selectOption[key] = response.data[key];
           });
         })
-        .catch((error) => {});
+        .catch((error) => { });
     },
   },
 };

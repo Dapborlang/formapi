@@ -81,6 +81,7 @@ class FormBuilderAPIController extends Controller
         $selectOption=[];
         $inputType=[];
         $dependant=[];
+        $breadcrump=[];
 
         $formMaster=FormMaster::findOrFail($id);
         $formInputType=FormInputType::where('form_master_id',$id)
@@ -120,8 +121,21 @@ class FormBuilderAPIController extends Controller
 
         $excludedColumns = $formMaster->excludedColumn()->pluck('name')->toArray();
         array_push($excludedColumns,'id','created_at','updated_at');
+        
+        if(isset($formMaster->breadCrump->BreadCrumbDetail))
+        {
+            $breadcrump=$formMaster->breadCrump->BreadCrumbDetail->pluck('breadcrumb_item')->toArray();
+        }
+        
         $columns = array_diff(DB::getSchemaBuilder()->getColumnListing($formMaster->table_name), $excludedColumns);
-        return ["header"=>$formMaster->header,"columns"=>$columns,"select"=>$selectOption,"inputType"=>$inputType,"dependant"=>$dependant];
+        return [
+            "header"=>$formMaster->header,
+            "columns"=>$columns,
+            "select"=>$selectOption,
+            "inputType"=>$inputType,
+            "dependant"=>$dependant,
+            "breadcrump"=>$breadcrump
+        ];
     }
     
     public function store(Request $request,$id)

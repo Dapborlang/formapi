@@ -12,7 +12,7 @@ class BreadCrumb extends Model
 
     public function BreadCrumbDetail()
     {
-       return $this->hasMany(BreadCrumDetail::class);
+       return $this->hasMany(BreadCrumbDetail::class)->select('breadcrumb_item');
     }
 
     public function FormMaster()

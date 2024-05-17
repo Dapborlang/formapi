@@ -25,6 +25,11 @@ class FormMaster extends Model
        return $this->hasMany(FormDependantField::class)->select('id','master_key','foreign_key');
     }
 
+    public function breadCrump()
+    {
+       return $this->hasOne(BreadCrumb::class);
+    }
+
     public function Role()
     {
         return $this->belongsTo(FormRole::class,'role','role');
