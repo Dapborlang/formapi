@@ -157,10 +157,13 @@ class FormBuilderAPIController extends Controller
         $modelInstance = new $modelClass;
         $form_data=$modelInstance->create($request->all());
 
-        if(isset($formMaster->breadCrump->BreadCrumbDetail) && $form_data)
+        if(isset($formMaster->breadCrump->BreadCrumbDetail))
         {
-            $breadcrumb=$formMaster->breadCrump->BreadCrumbDetail->pluck('breadcrumb_item')->toArray();
-            return ["breadcrumb"=>$breadcrumb];
+            $breadcrumb=$formMaster->breadCrump->BreadCrumbDetail;
+            return [
+                "breadcrumb"=>$breadcrumb,
+                "form_id"=>$form_data->id
+            ];
         }
     }
 

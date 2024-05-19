@@ -102,6 +102,7 @@ export default {
           if(response.data.breadcrumb)
           {
             this.fetchColumns(`/form-api/create/5`);
+            this.breadcrumbs = response.data.breadcrumb;
           }
         })
         .catch((error) => {
