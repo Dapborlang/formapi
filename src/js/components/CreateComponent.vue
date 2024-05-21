@@ -1,15 +1,12 @@
 <template>
   <div>
-    <template v-if="Object.keys(breadcrumbs).length">
+    <template v-if="breadcrumbs.length">
       <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item">
-            <a href="#">{{ header }}</a>
-          </li>
-          <li v-for="(breadcrumb, key) in breadcrumbs" :key="key"
-            :class="['breadcrumb-item', { 'active': breadcrumb === activeBreadcrumb }]">
-            <a v-if="breadcrumb !== activeBreadcrumb" href="#">{{ breadcrumb }}</a>
-            <span v-else>{{ breadcrumb }}</span>
+          <li v-for="(breadcrumb, index) in breadcrumbs" :key="index"
+            :class="['breadcrumb-item', { 'active': breadcrumb.form_master_id === form_master }]">
+            <a v-if="breadcrumb.form_master_id !== form_master" href="#">{{ breadcrumb.breadcrumb_item }}</a>
+            <span v-else>{{ breadcrumb.breadcrumb_item }}</span>
           </li>
         </ol>
       </nav>
@@ -70,15 +67,34 @@ export default {
       error: {},
       selectedOption: {},
       breadcrumbs: [],
-      activeBreadcrumb: "Testing"
+      activeBreadcrumb: null,
+      form_master: this.formid
     };
   },
   mounted() {
-    this.fetchColumns(`/form-api/create/${this.formid}`);
+    this.fetchColumns(`/form-api/create/${this.form_master}`);
   },
   methods: {
+    async submitForm() {
+      try {
+        const response = await axios.post(`/form-api/${this.form_master}`, this.formData);
+        console.log("Form submitted successfully:", response.data);
+        this.formData = {}; // Clear form data
+        this.form_master=response.data.form_master_id;
+        if (response.data.breadcrumb) {   
+          await this.fetchColumns(`/form-api/create/${this.form_master}`); // Wait for fetchColumns to complete
+          this.breadcrumbs = response.data.breadcrumb; // Update breadcrumbs
+        }
+      } catch (error) {
+        console.log(error);
+        if (error.response && error.response.data) {
+          this.error = error.response.data.errors; // Update error messages
+        }
+      }
+    },
+
     fetchColumns(url) {
-      axios
+      return axios
         .get(url)
         .then((response) => {
           this.header = response.data.header;
@@ -88,26 +104,13 @@ export default {
           this.dependant = response.data.dependant;
           this.inputType = response.data.inputType;
           this.breadcrumbs = response.data.breadcrumb;
+
+          const activeBreadcrumbItem = this.breadcrumbs.find(b => b.form_master_id == this.form_master);
+          this.activeBreadcrumb = activeBreadcrumbItem ? activeBreadcrumbItem.breadcrumb_item : null;
         })
         .catch((error) => {
           console.error("Error fetching columns:", error);
-        });
-    },
-    submitForm() {
-      axios
-        .post(`/form-api/${this.formid}`, this.formData)
-        .then((response) => {
-          console.log("Form submitted successfully:", response.data);
-          this.formData = {};
-          if(response.data.breadcrumb)
-          {
-            this.fetchColumns(`/form-api/create/5`);
-            this.breadcrumbs = response.data.breadcrumb;
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          this.error = error.response.data.errors;
+          throw error; // Re-throw the error to handle it in submitForm
         });
     },
     handleSelect(key, selectedOption) {
@@ -124,17 +127,17 @@ export default {
     },
     fetchDependantData(key, value) {
       const params = {
-        [key]: value,
+        [key]: value
       };
       axios
-        .get(`/form-api/dependant/${this.formid}`, { params })
+        .get(`/form-api/dependant/${this.form_master}`, { params })
         .then((response) => {
           Object.keys(response.data).forEach((key) => {
             this.selectedOption[key] = null;
             this.selectOption[key] = response.data[key];
           });
         })
-        .catch((error) => { });
+        .catch((error) => { console.error("Error fetching dependant data:", error); });
     },
   },
 };

@@ -124,7 +124,7 @@ class FormBuilderAPIController extends Controller
         
         if(isset($formMaster->breadCrump->BreadCrumbDetail))
         {
-            $breadcrumb=$formMaster->breadCrump->BreadCrumbDetail->pluck('breadcrumb_item')->toArray();
+            $breadcrumb=$formMaster->breadCrump->BreadCrumbDetail;
         }
         
         $columns = array_diff(DB::getSchemaBuilder()->getColumnListing($formMaster->table_name), $excludedColumns);
@@ -159,10 +159,11 @@ class FormBuilderAPIController extends Controller
 
         if(isset($formMaster->breadCrump->BreadCrumbDetail))
         {
+            
             $breadcrumb=$formMaster->breadCrump->BreadCrumbDetail;
             return [
                 "breadcrumb"=>$breadcrumb,
-                "form_id"=>$form_data->id
+                "form_master_id"=>5
             ];
         }
     }
@@ -243,5 +244,10 @@ class FormBuilderAPIController extends Controller
             }
         }
         return $selectOption;
+    }
+
+    public function checkBreadcrumb($id,$cur_id=null)
+    {
+        return $id;
     }
 }

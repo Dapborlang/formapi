@@ -28,7 +28,7 @@ return new class extends Migration
                 'bread_crumb_id' => 1,
                 'form_master_id' => 3,
                 'on_column_name' => 'form_master_id',
-                'breadcrumb_item' => 'Input Type'
+                'breadcrumb_item' => 'Form Master'
             ]
             ));
     }
