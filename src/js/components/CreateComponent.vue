@@ -5,7 +5,7 @@
         <ol class="breadcrumb">
           <li v-for="(breadcrumb, index) in breadcrumbs" :key="index"
             :class="['breadcrumb-item', { 'active': breadcrumb.form_master_id === form_master }]">
-            <a v-if="breadcrumb.form_master_id !== form_master" href="#">{{ breadcrumb.breadcrumb_item }}</a>
+            <a v-if="breadcrumb.form_master_id !== form_master" href="#" @click.prevent="changeActiveBreadcrumb(breadcrumb.form_master_id)">{{ breadcrumb.breadcrumb_item }}</a>
             <span v-else>{{ breadcrumb.breadcrumb_item }}</span>
           </li>
         </ol>
@@ -77,18 +77,19 @@ export default {
   methods: {
     async submitForm() {
       try {
-        const response = await axios.post(`/form-api/${this.form_master}`, this.formData);
+        const response = await axios.post(`/form-api/${this.formid}/${this.form_master}`, this.formData);
         console.log("Form submitted successfully:", response.data);
-        this.formData = {}; // Clear form data
+        this.formData = {}; 
         this.form_master=response.data.form_master_id;
-        if (response.data.breadcrumb) {   
-          await this.fetchColumns(`/form-api/create/${this.form_master}`); // Wait for fetchColumns to complete
-          this.breadcrumbs = response.data.breadcrumb; // Update breadcrumbs
+        if(this.breadcrumbs.length>0)
+        {
+          this.fetchColumns(`/form-api/create/${this.form_master}`);
         }
+                 
       } catch (error) {
         console.log(error);
         if (error.response && error.response.data) {
-          this.error = error.response.data.errors; // Update error messages
+          this.error = error.response.data.errors;
         }
       }
     },
@@ -103,14 +104,17 @@ export default {
           this.selectOption = response.data.select;
           this.dependant = response.data.dependant;
           this.inputType = response.data.inputType;
-          this.breadcrumbs = response.data.breadcrumb;
+          if(this.breadcrumbs.length===0)
+          {
+            this.breadcrumbs = response.data.breadcrumb;
+          }
 
           const activeBreadcrumbItem = this.breadcrumbs.find(b => b.form_master_id == this.form_master);
           this.activeBreadcrumb = activeBreadcrumbItem ? activeBreadcrumbItem.breadcrumb_item : null;
         })
         .catch((error) => {
           console.error("Error fetching columns:", error);
-          throw error; // Re-throw the error to handle it in submitForm
+          throw error; 
         });
     },
     handleSelect(key, selectedOption) {
@@ -139,6 +143,11 @@ export default {
         })
         .catch((error) => { console.error("Error fetching dependant data:", error); });
     },
+    changeActiveBreadcrumb(form_master)
+    {
+      this.form_master=form_master;
+      this.fetchColumns(`/form-api/create/${this.form_master}`);
+    }
   },
 };
 </script>

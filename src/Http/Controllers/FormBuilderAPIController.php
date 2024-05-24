@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Rdmarwein\FormApi\Models\FormInputType;
 use Rdmarwein\FormApi\Models\FormDependantField;
 use Rdmarwein\FormApi\Models\FormValidation;
+use Rdmarwein\FormApi\Models\BreadCrumb;
+use Rdmarwein\FormApi\Models\BreadCrumbDetail;
 
 class FormBuilderAPIController extends Controller
 {
@@ -138,8 +140,22 @@ class FormBuilderAPIController extends Controller
         ];
     }
     
-    public function store(Request $request,$id)
+    public function store(Request $request,$f_id,$c_id=null)
     {
+        $response=[];
+        if($c_id)
+        {
+            $id=$c_id;
+            $form_master_id=$this->checkBreadcrumb($f_id,$c_id);
+            if($form_master_id)
+            {
+                $response['form_master_id'] = $form_master_id;
+            }
+        }
+        else
+        {
+            $id=$f_id;
+        }
         $formValidations = FormValidation::where('form_master_id', $id)->get();
         $validationData = [];
         $breadcrumb=[];
@@ -157,15 +173,7 @@ class FormBuilderAPIController extends Controller
         $modelInstance = new $modelClass;
         $form_data=$modelInstance->create($request->all());
 
-        if(isset($formMaster->breadCrump->BreadCrumbDetail))
-        {
-            
-            $breadcrumb=$formMaster->breadCrump->BreadCrumbDetail;
-            return [
-                "breadcrumb"=>$breadcrumb,
-                "form_master_id"=>5
-            ];
-        }
+        return $response;
     }
 
     public function show(string $id)
@@ -246,8 +254,30 @@ class FormBuilderAPIController extends Controller
         return $selectOption;
     }
 
-    public function checkBreadcrumb($id,$cur_id=null)
+    public function checkBreadcrumb($id,$cur_id)
     {
-        return $id;
+        $breadcrumbId=BreadCrumb::where('form_master_id',$id)
+        ->first();
+        if(isset($breadcrumbId->id))
+        {
+        $breadCrumbDetail=BreadCrumbDetail::where('bread_crumb_id',$breadcrumbId->id)
+                        ->where('form_master_id',$cur_id)
+                        ->first();
+        
+            $breadCrumbDetail=BreadCrumbDetail::where('bread_crumb_id',$breadcrumbId->id)
+            ->where('id','>',$breadCrumbDetail->id)
+            ->first();
+            if(isset($breadCrumbDetail->form_master_id)){
+                return $breadCrumbDetail->form_master_id;
+            }
+            else
+            {
+                return null;
+            } 
+        }
+        else
+        {
+            return null;
+        }       
     }
 }
