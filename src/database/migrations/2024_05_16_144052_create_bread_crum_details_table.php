@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('bread_crumb_id');
             $table->unsignedBigInteger('form_master_id');
-            $table->string('on_column_name');
+            $table->string('on_column_name')->nullable();
+            $table->string('from_column_name')->nullable();
             $table->string('breadcrumb_item');
             $table->foreign('bread_crumb_id')->references('id')->on('bread_crumbs')->onDelete('cascade');
             $table->foreign('form_master_id')->references('id')->on('form_masters')->onDelete('cascade');
@@ -27,8 +28,16 @@ return new class extends Migration
             [
                 'bread_crumb_id' => 1,
                 'form_master_id' => 3,
-                'on_column_name' => 'form_master_id',
+                'on_column_name' => null,
+                'from_column_name' => null,
                 'breadcrumb_item' => 'Form Master'
+            ],
+            [
+                'bread_crumb_id' => 1,
+                'form_master_id' => 5,
+                'on_column_name' => 'form_master_id',
+                'from_column_name' => 'id',
+                'breadcrumb_item' => 'Input Type'
             ]
             ));
     }

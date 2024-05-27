@@ -21,17 +21,23 @@ class FormBuilderAPIController extends Controller
         $this->middleware('credential:'.$role->role);
     }
     
-    public function index($id)
+    public function index($id, Request $request)
     {
         $formMaster=FormMaster::findOrFail($id);
         $model=$formMaster->model;
-        $data=$model::paginate(10);
+        $data=$model::query();
         $itemData = [];
         $dataArray=[];
         $select=$formMaster->foreignKey->pluck('master_detail','foreign_key')->toArray();
         $excludedColumns = $formMaster->excludedColumn()->pluck('name')->toArray();
         array_push($excludedColumns,'id','created_at','updated_at');
         $columns = array_diff(DB::getSchemaBuilder()->getColumnListing($formMaster->table_name), $excludedColumns);
+        foreach ($request->all() as $key => $value) {
+            if (in_array($key, $columns)) {
+                $data = $data->where($key, $value);
+            }
+        }
+        $data=$data->orderBy('id', 'desc')->paginate(10);
         foreach($data as $item)
         {
             $itemData = [];
@@ -50,8 +56,7 @@ class FormBuilderAPIController extends Controller
                     }
                     else{
                         $itemData[$column]="please map the relation";
-                    }
-                   
+                    }                   
                 }
                 else
                 {
@@ -146,10 +151,14 @@ class FormBuilderAPIController extends Controller
         if($c_id)
         {
             $id=$c_id;
-            $form_master_id=$this->checkBreadcrumb($f_id,$c_id);
-            if($form_master_id)
+            $breadcrumb=$this->checkBreadcrumb($f_id,$c_id);
+            if($breadcrumb)
             {
-                $response['form_master_id'] = $form_master_id;
+                $response['breadcrumbData'] = $breadcrumb;
+            }
+            else
+            {
+                $response['form_master_id'] = null;
             }
         }
         else
@@ -172,7 +181,7 @@ class FormBuilderAPIController extends Controller
         $modelClass = $formMaster->model;
         $modelInstance = new $modelClass;
         $form_data=$modelInstance->create($request->all());
-
+        $response['from_column_name']=$form_data->id;
         return $response;
     }
 
@@ -256,6 +265,7 @@ class FormBuilderAPIController extends Controller
 
     public function checkBreadcrumb($id,$cur_id)
     {
+        $breadcrumb=null;
         $breadcrumbId=BreadCrumb::where('form_master_id',$id)
         ->first();
         if(isset($breadcrumbId->id))
@@ -268,7 +278,12 @@ class FormBuilderAPIController extends Controller
             ->where('id','>',$breadCrumbDetail->id)
             ->first();
             if(isset($breadCrumbDetail->form_master_id)){
-                return $breadCrumbDetail->form_master_id;
+                $breadcrumb["form_master_id"]=$breadCrumbDetail->form_master_id;
+                if(isset($breadCrumbDetail->on_column_name) && $breadCrumbDetail->on_column_name!=""){
+                    $breadcrumb["on_column_name"]=$breadCrumbDetail->on_column_name;
+                    $breadcrumb["from_column_name"]=$breadCrumbDetail->from_column_name;
+                }
+                return $breadcrumb;
             }
             else
             {
