@@ -20,7 +20,7 @@
                 <form @submit.prevent="submitForm">
                     <div class="row">
                         <template v-for="(value, key) in columns" :key="key">
-                            <template v-if="onColumnName.includes(value)">
+                            <template v-if="onColumnName==value">
                                 <input :id="value" v-model="formData[value]" type="hidden" />
                             </template>
                             <template v-else>
@@ -80,7 +80,7 @@ export default {
             breadcrumbs: [],
             activeBreadcrumb: null,
             form_master: this.formid,
-            onColumnName: []
+            onColumnName: ""
         };
     },
     mounted() {
@@ -92,14 +92,18 @@ export default {
                 const response = await axios.post(`/form-api/${this.formid}/${this.form_master}`, this.formData);
                 console.log("Form submitted successfully:", response.data);
 
-                if (response.data.breadcrumbData.form_master_id != null) {
-                    this.form_master = response.data.breadcrumbData.form_master_id;
+                if (response.data.breadcrumbData) {
+                    if (response.data.breadcrumbData.form_master_id != null)
+                    {
+                        this.form_master = response.data.breadcrumbData.form_master_id;
+                    }
+                    if (response.data.breadcrumbData.on_column_name != null) {
+                        // this.onColumnName.push(response.data.breadcrumbData.on_column_name);
+                        this.onColumnName=response.data.breadcrumbData.on_column_name;
+                        this.formData[response.data.breadcrumbData.on_column_name] = response.data.from_column_name;
+                    }
                 }
-                if (response.data.breadcrumbData.on_column_name != null) {
-                    this.onColumnName.push(response.data.breadcrumbData.on_column_name);
-                    this.formData[response.data.breadcrumbData.on_column_name] = response.data.from_column_name;
-                }
-
+                
                 this.updateIndexComponent();
                 if (this.breadcrumbs.length > 0) {
                     this.fetchColumns(`/form-api/create/${this.form_master}`);
